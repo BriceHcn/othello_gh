@@ -70,7 +70,7 @@ public class IndexController {
         if(form.getId() != null){
             c = users.findById(form.getId()).orElseThrow(() -> new RuntimeException("Not found"));
         }
-        
+
         if( (users.findByUsername(form.getUsername())!=null) || (users.findByPseudo(form.getPseudo())!=null)){
             model.addAttribute("errorUniciteLoginMail",1);
             return "register";
