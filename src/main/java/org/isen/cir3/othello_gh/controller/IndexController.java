@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import javax.validation.Valid;
 import java.util.*;
 
@@ -43,9 +42,7 @@ public class IndexController {
 
     @GetMapping("/register")
     public String register(@PathVariable(required = false)Long id,Model model) {
-
         UserForm userForm = new UserForm();
-
         model.addAttribute("user",userForm);
         /*
         if(id!= null){
@@ -71,7 +68,6 @@ public class IndexController {
         if(form.getId() != null){
             c = users.findById(form.getId()).orElseThrow(() -> new RuntimeException("Not found"));
         }
-
         c.setUsername(form.getUsername());
         c.setPseudo(form.getPseudo());
         c.setPassword(getPasswordEncoder().encode(form.getPassword()));
@@ -79,7 +75,6 @@ public class IndexController {
         e.setId(Integer.toUnsignedLong(2));
         c.setAuthorities(new ArrayList<Authority>());
         c.getAuthorities().add(e);
-
         users.save(c);
         return "redirect:/login";
     }
