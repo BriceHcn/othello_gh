@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
+
 
 
 @Getter
@@ -24,6 +26,7 @@ import java.util.*;
 
 @Controller
 public class IndexController {
+
     @Autowired
     private UserRepository users;
 
@@ -57,17 +60,22 @@ public class IndexController {
     }
 
     @PostMapping("/register")
-    public String addAction(@Valid @ModelAttribute("user") UserForm form, BindingResult result, Model model) {
+    public String addAction(@Valid @ModelAttribute("user") UserForm form, BindingResult result, Model model,HttpServletRequest request) {
         if(result.hasErrors()){
             model.addAttribute("user",form);
             return "register";
         }
-
         User c = new User();
 
         if(form.getId() != null){
             c = users.findById(form.getId()).orElseThrow(() -> new RuntimeException("Not found"));
         }
+        
+        if( (users.findByUsername(form.getUsername())!=null) || (users.findByPseudo(form.getPseudo())!=null)){
+            model.addAttribute("errorUniciteLoginMail",1);
+            return "register";
+        }
+
         c.setUsername(form.getUsername());
         c.setPseudo(form.getPseudo());
         c.setPassword(getPasswordEncoder().encode(form.getPassword()));
@@ -76,10 +84,15 @@ public class IndexController {
         c.setAuthorities(new ArrayList<Authority>());
         c.getAuthorities().add(e);
         users.save(c);
+        /*
+        try {//TODO connexion automatique aprés inscription
+            request.login(c.getUsername(),c.getPassword());
+        } catch (ServletException servletException) {
+            servletException.printStackTrace();
+        }
+         */
         return "redirect:/login";
     }
-
-
-
-
 }
+
+

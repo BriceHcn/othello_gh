@@ -21,6 +21,7 @@
             <label for="password">Mot de passe</label>
             <input type="password" id="password" name="password" autocomplete="off"/>
             <div class="form-actions">
+                <div class="alert alert-danger" th:if="${errorUniciteLoginMail != null}">Mail ou pseudo deja pris, Recommence</div>
                 <div class="alert alert-danger" th:if="${#fields.hasErrors('user.pseudo')}" th:errors="*{user.pseudo}">Invalide</div>
                 <div class="alert alert-danger" th:if="${#fields.hasErrors('user.username')}" th:errors="*{user.username}">Invalide</div>
                 <div class="alert alert-danger" th:if="${#fields.hasErrors('user.password')}" th:errors="*{user.password}">Invalide</div>

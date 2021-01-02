@@ -22,4 +22,12 @@ public class DbUserDetailsService implements UserDetailsService {
         return user;
     }
 
+    public UserDetails loadUserByPseudo(String pseudo) throws UsernameNotFoundException {
+        UserDetails user = users.findByPseudo(pseudo);
+        if(user == null){
+            throw new UsernameNotFoundException(pseudo);
+        }
+        return user;
+    }
+
 }
