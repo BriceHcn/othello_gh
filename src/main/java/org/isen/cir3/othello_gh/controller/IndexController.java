@@ -44,7 +44,7 @@ public class IndexController {
     public String register(@PathVariable(required = false)Long id,Model model) {
         UserForm userForm = new UserForm();
         model.addAttribute("user",userForm);
-        /*
+
         if(id!= null){
             User c = users.findById(id).orElseThrow(() ->new RuntimeException("Not found"));
             userForm.setId(c.getId());
@@ -52,7 +52,7 @@ public class IndexController {
             userForm.setUsername(c.getUsername());
             userForm.setPassword(c.getPassword());
         }
-        */
+
         return "register";
     }
 
