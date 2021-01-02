@@ -1,0 +1,31 @@
+<html th:replace="~{layout :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:fragment="title">Register - Othello GH</title>
+</head>
+<body>
+<div th:fragment="content">
+    <form name="f" th:action="@{/register}" method="post">
+        <fieldset>
+            <legend>Authentification</legend>
+            <div th:if="${param.error}" class="alert alert-error">
+                L'identifiant et le mot de passe sont invalides
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success">
+                Vous avez été déconnecté
+            </div>
+
+            <label for="pseudo">Pseudo</label>
+            <input type="text" id="pseudo" name="pseudo" autocomplete="off"/>
+            <label for="username">Mail</label>
+            <input type="text" id="username" name="username" autocomplete="off"/>
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" autocomplete="off"/>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </fieldset>
+    </form>
+    <!--<a th:href="@{/login}" th:text="login page">login</a>-->
+</div>
+</body>
+</html>
