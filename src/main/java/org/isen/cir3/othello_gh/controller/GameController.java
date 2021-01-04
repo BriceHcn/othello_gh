@@ -67,7 +67,7 @@ public class GameController {
         return "game";
     }
 
-    @PostFilter("filterObject.pseudo == authentication.principal.pseudo")//TODO faire marcher ca
+    @PostFilter("filterObject.username == authentication.principal.username")//TODO faire marcher ca, mettre ca dans une classe 'UserService'
     private List<User> getAllUserExceptCurrent() {
         return users.findAll();
     }
