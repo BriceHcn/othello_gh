@@ -34,8 +34,9 @@ public class IndexController {
     private PasswordEncoder PasswordEncoder;
 
     @GetMapping({"","/"})
+
     public String index(){
-        return "index";
+        return "redirect:/game/list";
     }
 
     @GetMapping("/login")
