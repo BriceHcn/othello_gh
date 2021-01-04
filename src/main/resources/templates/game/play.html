@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html th:replace="~{layout :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:fragment="title">othello gh</title>
+    <meta http-equiv="refresh" content="5">
+    <title th:fragment="title">Partie en cours - Othello GH</title>
 </head>
 <body>
 
 
 
 <div th:fragment="content">
-    <p th:text="${game.id}">test</p>
+    <p th:if="${message ne null}" class="alert alert-danger" th:text="${message}"></p>
+
+    <p th:if="${game.status.name() == 'BLACK_TURN'}">Player <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, this is your turn!</p>
+    <p th:if="${game.status.name() == 'WHITE_TURN'}">Player <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, this is your turn!</p>
+    <p th:if="${game.status.name() == 'DRAW'}">This is a draw ! No winner... but no looser either!</p>
+    <p th:if="${game.status.name() == 'FINISHED'}">Player <span th:text="${users.findById(game.winner.longValue()).get().getPseudo()}">X</span> wins!</p>
 
 
+
+
+    <table class="board">
+        <tr th:each="row: ${#numbers.sequence(0, boardSize-1)}">
+            <td th:each="column: ${#numbers.sequence(0, boardSize-1)}"
+                th:text="${game.board[row][column]}"
+                th:onclick="|location.href='@{/game/play/{id}/{col}/{row}(id=${game.id}, row=${row}, col=${column})}'|"
+            ></td>
+        </tr>
+    </table>
 
 </div>
 </body>

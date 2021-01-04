@@ -1,6 +1,7 @@
 package org.isen.cir3.othello_gh.controller;
 
 import org.isen.cir3.othello_gh.domain.Game;
+import org.isen.cir3.othello_gh.exception.InvalidMoveException;
 import org.isen.cir3.othello_gh.form.GameForm;
 import org.isen.cir3.othello_gh.repository.GameRepository;
 import org.isen.cir3.othello_gh.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -77,8 +80,29 @@ public class GameController {
     public String game(@PathVariable Long id, Model model) {
         Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("game", game);
+        model.addAttribute("boardSize",game.getBoard().length);
+        model.addAttribute("users",users);
         return "game/play";
     }
+
+
+    @GetMapping("/play/{id}/{col}/{row}")
+    public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row, RedirectAttributes attribs) {
+        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if(!gameService.canIplay(userService.getConnectedUserUsername(), game)){
+            return "redirect:/game/" + id;
+        }else{
+
+        }
+        try {
+            games.save(gameService.play(game, col, row));
+        } catch (InvalidMoveException e) {
+            attribs.addFlashAttribute("message", e.getMessage());
+        }
+
+        return "redirect:/game/" + id;
+    }
+
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){

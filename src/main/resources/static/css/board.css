@@ -1,0 +1,12 @@
+table.board {
+    border-collapse: collapse;
+}
+
+table.board td {
+    border: 1px solid black;
+    font-size: 3em;
+    font-family: Consolas,monaco,monospace;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+}
