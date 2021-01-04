@@ -20,8 +20,8 @@
 
 
     <table class="board">
-        <tr th:each="row: ${#numbers.sequence(0, boardSize-1)}">
-            <td th:each="column: ${#numbers.sequence(0, boardSize-1)}"
+        <tr th:each="column: ${#numbers.sequence(0, boardSize-1)}">
+            <td th:each="row: ${#numbers.sequence(0, boardSize-1)}"
                 th:text="${game.board[row][column]}"
                 th:onclick="|location.href='@{/game/play/{id}/{col}/{row}(id=${game.id}, row=${row}, col=${column})}'|"
             ></td>

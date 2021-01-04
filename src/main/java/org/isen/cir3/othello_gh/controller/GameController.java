@@ -91,8 +91,6 @@ public class GameController {
         Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if(!gameService.canIplay(userService.getConnectedUserUsername(), game)){
             return "redirect:/game/" + id;
-        }else{
-
         }
         try {
             games.save(gameService.play(game, col, row));

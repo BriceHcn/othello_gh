@@ -40,7 +40,7 @@ public class GameService {
         return game;
     }
     private void setCell(Game game, int row, int column, CellStatus value) {
-        game.getBoard()[row][column] = value;
+        game.getBoard()[column][row] = value;
     }
 
     public Object findGameForCurrentUser() {
