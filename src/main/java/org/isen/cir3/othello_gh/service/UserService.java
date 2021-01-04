@@ -8,7 +8,7 @@ import java.util.List;
 
 public class UserService {
 
-    @PostFilter("filterObject.username != authentication.principal.username")//todo ca ne marche pas 
+    @PostFilter("filterObject.username != authentication.principal.username")//todo ca ne marche pas
     public List<User> getAllUserExceptCurrent(UserRepository users) {
         return users.findAll();
     }

@@ -10,7 +10,7 @@
 <div th:fragment="content">
     <h1>formulaire creation de partie</h1>
     <form action="#" th:action="@{/game/create}" th:object="${game}" method="post">
-        <!--<input type="hidden"th:field="*{id}"/>-->
+
 
         <div class="form-group">
             <label for="opponent">Adversaire</label>
@@ -28,6 +28,9 @@
                 <option th:each="d : ${sizes}" th:value="${d}" th:text="${d}"></option>
             </select>
         </div>
+
+
+        <input type="hidden" id="currentUser" name="currentUser" th:value="${#authentication.principal.id}"/>
 
 
         <button type="submit" class="btn btn-primary">Enregistrer</button>

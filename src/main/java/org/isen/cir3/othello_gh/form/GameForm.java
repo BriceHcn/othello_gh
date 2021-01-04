@@ -15,6 +15,8 @@ public class GameForm {
     //@Size(min = 2, max = 20)
     private Integer opponent;
 
+    private Integer currentUser;
+
     @Min(4)
     @Max(8)
     private int Size;

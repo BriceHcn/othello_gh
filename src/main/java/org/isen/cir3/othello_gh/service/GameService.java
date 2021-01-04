@@ -10,19 +10,24 @@ public class GameService {
 
 
 
-    public Game create() {
-        Game game = new Game();
+    public Game create(int size, int idJ1, int idJ2) {
+        Game game = new Game(size);
 
         game.setStatus(GameStatus.STARTED);
+        game.setBlack(idJ1);//todo randomisation des joueurs
+        game.setWhite(idJ2);
+        game.setCurrentPlayer(game.getBlack());
+        //game.setWinner(null);
 
-        for (int row = 0; row < 3; ++row) {
-            for (int col = 0; col < 3; ++col) {
+        for (int row = 0; row < size-1; ++row) {
+            for (int col = 0; col < size-1; ++col) {
                 setCell(game, row, col, CellStatus.EMPTY);
             }
         }
 
         return game;
     }
-    private void setCell(Game game, int row, int column, CellStatus value) { game.getBoard()[row][column] = value;
+    private void setCell(Game game, int row, int column, CellStatus value) {
+        game.getBoard()[row][column] = value;
     }
 }

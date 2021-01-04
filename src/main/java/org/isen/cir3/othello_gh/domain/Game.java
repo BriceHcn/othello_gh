@@ -17,21 +17,21 @@ public class Game {
     private GameStatus status;
 
     @Column
-    private User winner;
+    private Integer winner;
 
     @Column
-    private User white;
+    private Integer white;
 
     @Column
-    private User black;
+    private Integer black;
 
     @Column
-    private User currentPlayer;
+    private Integer currentPlayer;
 
     @Lob
     private CellStatus[][] board;
 
-    public Game() {
-        board = new CellStatus[8][8];
+    public Game(Integer size) {
+        board = new CellStatus[size-1][size-1];
     }
 }

@@ -31,9 +31,6 @@ public class GameController {
     @Autowired
     private UserRepository users;
 
-
-    //private BoardSize sizes;
-
     @Autowired
     private GameRepository repository;
 
@@ -44,27 +41,37 @@ public class GameController {
     public String create(Model model) {
         UserService test=new UserService();
         model.addAttribute("opponents",test.getAllUserExceptCurrent(users));
-        List tailles = Arrays.asList(4, 6, 8);//todo dans un enum ou quoi
+        List tailles = Arrays.asList(8, 6, 4);//todo dans un enum ou quoi
         model.addAttribute("sizes",tailles);
         return "game/create";
     }
 
     @PostMapping("/create")
     public String addAction(@Valid @ModelAttribute("game") GameForm form, BindingResult result, Model model, HttpServletRequest request) {
-
-        System.out.println("veux jouer contre "+form.getOpponent());
-        System.out.println("Sur un plateau de la taille "+form.getSize());
-        //TODO
-        //Game game = repository.save(service.create());
+        if(result.hasErrors()){
+            model.addAttribute("game",form);
+            return "game/create";
+        }
+        if(form == null){
+            return "game/create";
+        }
+        Game game = repository.save(service.create(form.getSize(),form.getCurrentUser(), form.getOpponent()));
         return "index";
     }
 
+
+    @GetMapping("game/list")
+    public String list(Model model){
+
+
+
+        return"game/list";
+    }
 
     @GetMapping("/game/{id}")
     public String game(@PathVariable Long id, Model model) {
         Game game = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("game", game);
-
         return "game";
     }
 
