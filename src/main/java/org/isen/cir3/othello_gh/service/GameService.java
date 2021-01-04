@@ -56,7 +56,15 @@ public class GameService {
 
     public Game play(Game game, int row, int column) {
         // ok, so this is a valid move, update board
-        setCell(game, row, column, CellStatus.B);
+
+        CellStatus c;
+        if(game.getBoard()[column][row]==CellStatus.B){
+            c=CellStatus.B;
+        }else{
+            c=CellStatus.W;
+        }
+        setCell(game, row, column, c);
+        
 
         // check if there is a winner
         //checkWinner(game);
