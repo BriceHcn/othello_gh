@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameService {
 
+
+
     public Game create() {
         Game game = new Game();
 
@@ -21,7 +23,6 @@ public class GameService {
 
         return game;
     }
-    private void setCell(Game game, int row, int column, CellStatus value) {
-        game.getBoard()[row][column] = value;
+    private void setCell(Game game, int row, int column, CellStatus value) { game.getBoard()[row][column] = value;
     }
 }

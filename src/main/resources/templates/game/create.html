@@ -15,7 +15,10 @@
         <div class="form-group">
             <label for="opponent">Adversaire</label>
             <select class="form-control" id="opponent" name="opponent" >
-                <option th:each="c : ${opponents}" th:value="${c.id}" th:text="${c.pseudo}"></option>
+                <th:block th:each="c : ${opponents}">
+                    <option th:if="${c.pseudo != #authentication.principal.pseudo}" th:value="${c.id}" th:text="${c.pseudo}" ></option>
+                </th:block>
+
             </select>
         </div>
 

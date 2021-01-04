@@ -6,11 +6,13 @@ import org.isen.cir3.othello_gh.form.GameForm;
 import org.isen.cir3.othello_gh.repository.GameRepository;
 import org.isen.cir3.othello_gh.repository.UserRepository;
 import org.isen.cir3.othello_gh.service.GameService;
+import org.isen.cir3.othello_gh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,9 +42,8 @@ public class GameController {
 
     @GetMapping("/create")
     public String create(Model model) {
-        model.addAttribute("opponents",getAllUserExceptCurrent());
-        System.out.println(getAllUserExceptCurrent().size());
-        System.out.println(users.findAll().size());
+        UserService test=new UserService();
+        model.addAttribute("opponents",test.getAllUserExceptCurrent(users));
         List tailles = Arrays.asList(4, 6, 8);//todo dans un enum ou quoi
         model.addAttribute("sizes",tailles);
         return "game/create";
@@ -67,10 +68,7 @@ public class GameController {
         return "game";
     }
 
-    @PostFilter("filterObject.username == authentication.principal.username")//TODO faire marcher ca, mettre ca dans une classe 'UserService'
-    private List<User> getAllUserExceptCurrent() {
-        return users.findAll();
-    }
+
 
 
 
