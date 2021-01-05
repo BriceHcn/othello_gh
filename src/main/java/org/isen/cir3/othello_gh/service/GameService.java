@@ -28,6 +28,7 @@ public class GameService {
         game.setBlack(J1);//todo randomisation des joueurs
         game.setWhite(J2);
         game.setCurrentPlayer(J1);//TODO celui qui a les noirs du coup, pas forcement j1
+        //todo initialiser le plateau comme dans le vrai jeu
         game.setStatus(GameStatus.BLACK_TURN);
         //game.setWinner(null);
 
@@ -57,13 +58,17 @@ public class GameService {
     public Game play(Game game, int row, int column) {
         // ok, so this is a valid move, update board
 
-        CellStatus c;
-        if(game.getBoard()[column][row]==CellStatus.B){
-            c=CellStatus.B;
-        }else{
-            c=CellStatus.W;
+        //todo a revoir
+        int cur = game.getCurrentPlayer();
+        int b = game.getBlack();
+        int w = game.getWhite();
+        if(cur == b){
+            setCell(game, row, column, CellStatus.B);
         }
-        setCell(game, row, column, c);
+        else{
+            setCell(game, row, column, CellStatus.W);
+        }
+
         
 
         // check if there is a winner

@@ -104,7 +104,7 @@ public class GameController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
-        games.deleteById(id);
+        games.deleteById(id); //todo voir si deux personne supprime en meme temps
         return"redirect:/game/list";
     }
 

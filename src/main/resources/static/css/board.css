@@ -4,7 +4,7 @@ table.board {
 
 table.board td {
     border: 1px solid black;
-    font-size: 3em;
+    font-size: 2em;
     font-family: Consolas,monaco,monospace;
     height: 60px;
     width: 60px;
