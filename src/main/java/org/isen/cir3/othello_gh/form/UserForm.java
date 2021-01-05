@@ -19,7 +19,6 @@ public class UserForm {
     @NotNull
     @NotEmpty
     @NotBlank
-    @Size(min = 2, max = 20)
     @Email
     private String username;
 
