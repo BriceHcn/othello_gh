@@ -56,8 +56,6 @@ public class GameService {
 
 
     public Game play(Game game, int row, int column) {
-        // ok, so this is a valid move, update board
-        //todo a revoir
         int cur = game.getCurrentPlayer();
         int b = game.getBlack();
         int w = game.getWhite();
