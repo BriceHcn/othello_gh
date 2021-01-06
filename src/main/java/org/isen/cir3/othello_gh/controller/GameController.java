@@ -78,7 +78,7 @@ public class GameController {
 
     @GetMapping("/{id}")
     public String game(@PathVariable Long id, Model model) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));//todo catch l'execption
         model.addAttribute("game", game);
         model.addAttribute("boardSize",game.getBoard().length);
         model.addAttribute("users",users);
@@ -87,9 +87,15 @@ public class GameController {
 
 
     @GetMapping("/play/{id}/{col}/{row}")
-    public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row, RedirectAttributes attribs) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row,Model model, RedirectAttributes attribs) {
+        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));//todo catch l'execption
+
         if(!gameService.canIplay(userService.getConnectedUserUsername(), game)){
+            attribs.addFlashAttribute("message", "C'est pas ton tour");
+            return "redirect:/game/" + id;
+        }
+        if(!gameService.isCaseEmpty(game, col, row)){
+            attribs.addFlashAttribute("message", "Cette case est deja prise");
             return "redirect:/game/" + id;
         }
         try {
@@ -97,7 +103,6 @@ public class GameController {
         } catch (InvalidMoveException e) {
             attribs.addFlashAttribute("message", e.getMessage());
         }
-
         return "redirect:/game/" + id;
     }
 

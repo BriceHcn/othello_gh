@@ -35,6 +35,9 @@ public class IndexController {
 
     @GetMapping({"","/"})
     public String index(){
+        //todo rajouter un truc en bdd qui creer les deux statut du site
+        //Authority auth = new Authority(1,ROLE_ADMIN);
+        //Authority auth = new Authority(2,ROLE_ADMIN);
         return "redirect:/game/list";
     }
 
@@ -76,7 +79,7 @@ public class IndexController {
             return "register";
         }
 
-        c.setUsername(form.getUsername());
+        c.setUsername(form.getUsername()); //todo deplacer tout ca dans user service genre CreateUser(pseudo,username,password) et faire le metier la dedans
         c.setPseudo(form.getPseudo());
         c.setPassword(getPasswordEncoder().encode(form.getPassword()));
         Authority e = new Authority();

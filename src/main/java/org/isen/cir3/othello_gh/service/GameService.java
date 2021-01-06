@@ -24,22 +24,33 @@ public class GameService {
 
 
     public Game create(int size, int J1, int J2) {
+        //setup des roles
         Game game = new Game(size);
-        game.setBlack(J1);//todo randomisation des joueurs
-        game.setWhite(J2);
-        game.setCurrentPlayer(J1);//TODO celui qui a les noirs du coup, pas forcement j1
-        //todo initialiser le plateau comme dans le vrai jeu
+        if(Math.random() < 0.5){
+            game.setBlack(J1);
+            game.setWhite(J2);
+        }else{
+            game.setBlack(J2);
+            game.setWhite(J1);
+        }
+        game.setCurrentPlayer(game.getBlack());
+        //setup du joueur qui commence
         game.setStatus(GameStatus.BLACK_TURN);
-        //game.setWinner(null);
 
+        //setup du plateau
         for (int row = 0; row < size; ++row) {
             for (int col = 0; col < size; ++col) {
                 setCell(game, row, col, CellStatus.EMPTY);
             }
         }
+        game.getBoard()[((size/2)-1)][((size/2)-1)]=CellStatus.W;
+        game.getBoard()[(size/2)][(size/2)]=CellStatus.W;
+        game.getBoard()[(size/2)-1][(size/2)]=CellStatus.B;
+        game.getBoard()[(size/2)][((size/2)-1)]=CellStatus.B;
 
         return game;
     }
+    
     private void setCell(Game game, int row, int column, CellStatus value) {
         game.getBoard()[column][row] = value;
     }
@@ -103,10 +114,20 @@ public class GameService {
     private void checkWinner(Game game) {
     }
 
+    public boolean isCaseEmpty(Game game,int col,int row){
+        if((game.getBoard()[row][col].toString()).equals(CellStatus.EMPTY.toString())){
+            return true;
+        }else{
+            return false;
+        }
+    }
     public boolean canIplay(String connectedUserUsername,Game game) {
-        if((long)game.getCurrentPlayer() == users.findByUsername(connectedUserUsername).getId()){
+        if(((long)game.getCurrentPlayer() == users.findByUsername(connectedUserUsername).getId())){
             return true;
         }
-        return false;
+        else{
+            return false;
+        }
+
     }
 }

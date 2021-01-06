@@ -2,7 +2,7 @@ package org.isen.cir3.othello_gh.domain;
 
 public enum CellStatus {
     EMPTY(""), B("⚫"), W("⚪");
-
+    //EMPTY("E"), B("B"), W("W");
     public final String string;
 
     private CellStatus(String string) {

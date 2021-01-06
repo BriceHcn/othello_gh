@@ -9,6 +9,9 @@
 <div th:fragment="content">
     <meta http-equiv="refresh" content="5">
     <link rel="stylesheet" th:href="@{/css/board.css}" />
+
+    <h3>⚫ <span th:text="${users.findById(game.getBlack().longValue()).get().getPseudo()}">X</span> VS <span th:text="${users.findById(game.getWhite().longValue()).get().getPseudo()}">X</span> ⚪</h3>
+
     <p th:if="${message ne null}" class="alert alert-danger" th:text="${message}"></p>
 
     <p th:if="${game.status.name() == 'BLACK_TURN'}">Au tour de <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
