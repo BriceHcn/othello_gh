@@ -9,6 +9,9 @@ import org.isen.cir3.othello_gh.repository.UserRepository;
 import org.isen.cir3.othello_gh.service.GameService;
 import org.isen.cir3.othello_gh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,17 +70,17 @@ public class GameController {
 
 
     @GetMapping("/list")
-    public String list(Model model){
-        model.addAttribute("games",gameService.findGameForCurrentUser());
+    public String list(Model model,@PageableDefault(page=0, size=10, sort = "created", direction = Sort.Direction.DESC) Pageable pageable){
+        model.addAttribute("games",gameService.findGameForCurrentUser(pageable));
         model.addAttribute("users",users);
-        //(game.getStatus().equals(GameStatus.BLACK_TURN)) || ((game.getStatus().equals(GameStatus.WHITE_TURN)))
+
         return"game/list";
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list/all")
-    public String listAll(Model model){
-        model.addAttribute("games",games.findAll());
+    public String listAll(Model model ,@PageableDefault(page=0, size=10, sort = "created", direction = Sort.Direction.DESC) Pageable pageable){
+        model.addAttribute("games",games.findAll(pageable));
         model.addAttribute("users",users);
         return"game/list";
     }
@@ -93,7 +96,7 @@ public class GameController {
             return "game/play";
             //sinon redirection vers la liste des parties
         }else{
-            attribs.addFlashAttribute("message", "Cette partie n'existe pas (ou plus) 😢");
+            attribs.addFlashAttribute("message", "Ton adversaire à supprimé cette partie (sans doute un mauvais perdant) 😢");
             return "redirect:/game/list";
         }
     }

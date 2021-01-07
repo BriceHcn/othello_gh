@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,6 +14,8 @@ public class Game {
     @GeneratedValue
     private Long id;
 
+    private LocalDateTime created = LocalDateTime.now();
+
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
@@ -21,6 +24,12 @@ public class Game {
 
     @Column
     private Integer white;
+
+    @Column
+    private Integer scoreWhite;
+
+    @Column
+    private Integer scoreBlack;
 
     @Column
     private Integer black;

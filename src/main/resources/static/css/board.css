@@ -10,3 +10,7 @@ table.board td {
     width: 60px;
     text-align: center;
 }
+
+
+#boiteJeu{
+display:flex;}

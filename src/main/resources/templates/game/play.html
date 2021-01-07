@@ -17,7 +17,7 @@
     <p th:if="${game.status.name() == 'BLACK_TURN'}">Au tour de <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
     <p th:if="${game.status.name() == 'WHITE_TURN'}">Au tour de <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
 
-
+<div id="boiteJeu">
     <table class="board">
         <tr th:each="column: ${#numbers.sequence(0, boardSize-1)}">
             <td th:each="row: ${#numbers.sequence(0, boardSize-1)}"
@@ -26,6 +26,11 @@
             ></td>
         </tr>
     </table>
+    <div id ="boiteScore">
+    <p><span th:text="${game.getScoreBlack()}">33</span> ⚫ </p>
+        <p><span th:text="${game.getScoreWhite()}">20</span> ⚪ </p>
+    </div>
+</div>
 
 </div>
 </body>

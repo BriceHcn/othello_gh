@@ -7,6 +7,11 @@ import org.isen.cir3.othello_gh.exception.InvalidMoveException;
 import org.isen.cir3.othello_gh.repository.GameRepository;
 import org.isen.cir3.othello_gh.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,15 +41,17 @@ public class GameService {
             game.setWhite(J1);
         }
         game.setCurrentPlayer(game.getBlack());
+        game.setScoreBlack(2);
+        game.setScoreWhite(2);
         //setup du joueur qui commence
         game.setStatus(GameStatus.BLACK_TURN);
-
         //setup du plateau
         for (int row = 0; row < size; ++row) {
             for (int col = 0; col < size; ++col) {
                 setCell(game, row, col, CellStatus.EMPTY);
             }
         }
+        //plateau de base
         game.getBoard()[((size/2)-1)][((size/2)-1)]=CellStatus.W;
         game.getBoard()[(size/2)][(size/2)]=CellStatus.W;
         game.getBoard()[(size/2)-1][(size/2)]=CellStatus.B;
@@ -56,38 +63,53 @@ public class GameService {
         game.getBoard()[column][row] = value;
     }
 
-    public Object findGameForCurrentUser() {
-        List<Game> gamesForSpecificUser= new ArrayList<Game>();
-        for(Game g : games.findAll()){
+    public int checkScore(Game game, CellStatus cell){
+        int score = 0;
+        for(int i = 0;i<game.getBoard().length;i++){
+            for(int a = 0;a<game.getBoard().length;a++){
+                if(game.getBoard()[i][a].toString().equals(cell.toString())){
+                    score=score+1;
+                }
+
+            }
+        }
+        return score;
+    }
+
+    public Object findGameForCurrentUser( Pageable pageable) {
+        List<Game> gamesForSpecificUser= new ArrayList();
+        for(Game g : games.findAll(pageable)){
             if((users.findById((long) g.getWhite()).get().getUsername()).equals(userService.getConnectedUserUsername())  || (users.findById((long) g.getBlack()).get().getUsername()).equals(userService.getConnectedUserUsername())){
                 gamesForSpecificUser.add(g);
             }
         }
-        return gamesForSpecificUser;
+        Page<Game> test= new PageImpl<>(gamesForSpecificUser);
+
+        return test;
     }
 
     public Game play(Game game, int row, int column) throws InvalidMoveException {
         int cur = game.getCurrentPlayer();
         int b = game.getBlack();
-        int w = game.getWhite();
-
-
+        //si c'est le tour blanc
         if(cur == b){
+            //on voit si le moove est valide
             try {
-                isMoveValid(game, cur, b, w, column, row, CellStatus.B, CellStatus.W);
+                isMoveValid(game, column, row, CellStatus.B, CellStatus.W);
             }catch (InvalidMoveException e){
                 throw new InvalidMoveException();
             }
         }
+        //si c'est tour noir
         else{
             try {
-                isMoveValid(game, cur, b, w, column, row, CellStatus.W, CellStatus.B);
+                isMoveValid(game, column, row, CellStatus.W, CellStatus.B);
             }catch (InvalidMoveException e){
                 throw new InvalidMoveException();
             }
         }
 
-
+        //si le coup est valide on place un pion de la bonn couleur
         if(cur == b){
             setCell(game, column, row, CellStatus.B);
         }
@@ -96,19 +118,115 @@ public class GameService {
         }
 
 
-        // check if there is a winner
-        //checkWinner(game);
-        // no winner ? then check if this is a draw
-        //if (game.getWinner()== null) {
-            //checkDraw(game);
-        //}
+
+
 
         // if the game has not ended, alternate player
         alternatePlayer(game);
+        //on actualise les scores
+        game.setScoreWhite(checkScore(game, CellStatus.W));
+        game.setScoreBlack(checkScore(game, CellStatus.B));
+
+
+
+        game=checkWinner(game);
+        // no winner ? then check if this is a draw
+        if (game.getWinner()== null) {
+            game= checkDraw(game);
+        }
         return game;
     }
 
-    private boolean isMoveValid(Game game,int cur, int black, int white, int col ,int row,CellStatus player,CellStatus opp) throws InvalidMoveException{
+    private void alternatePlayer(Game game) {
+        int cur = game.getCurrentPlayer();
+        int b = game.getBlack();
+        int w = game.getWhite();
+        if(cur == b){
+            game.setCurrentPlayer(w);
+            game.setStatus(GameStatus.WHITE_TURN);
+        }
+        else{
+            game.setCurrentPlayer(b);
+            game.setStatus(GameStatus.BLACK_TURN);
+        }
+    }
+
+    private Game checkDraw(Game game) {
+        int scoreB = 0;
+        int scoreW = 0;
+        int scoreE = 0;
+        int size = game.getBoard().length;
+        int nbCase = size*size;
+        for(int i = 0;i<size;i++){
+            for(int a = 0;a<size;a++){
+                if(game.getBoard()[i][a].toString().equals(CellStatus.B.toString())){
+                    scoreB=scoreB+1;
+                }
+                else if(game.getBoard()[i][a].toString().equals(CellStatus.W.toString())){
+                    scoreW=scoreW+1;
+                }else if(game.getBoard()[i][a].toString().equals(CellStatus.EMPTY.toString())){
+                    scoreE=scoreE+1;
+                }
+            }
+        }
+        if(scoreE==0 && scoreB==scoreW){
+            game.setStatus(GameStatus.DRAW);
+            return  game;
+
+        }
+        return null;
+    }
+
+    private Game checkWinner(Game game) {
+        int scoreB = 0;
+        int scoreW = 0;
+        int scoreE = 0;
+        int size = game.getBoard().length;
+        int nbCase = size*size;
+        for(int i = 0;i<size;i++){
+            for(int a = 0;a<size;a++){
+                if(game.getBoard()[i][a].toString().equals(CellStatus.B.toString())){
+                    scoreB=scoreB+1;
+                }
+                else if(game.getBoard()[i][a].toString().equals(CellStatus.W.toString())){
+                    scoreW=scoreW+1;
+                }else if(game.getBoard()[i][a].toString().equals(CellStatus.EMPTY.toString())){
+                    scoreE=scoreE+1;
+                }
+            }
+        }
+        if(scoreE==0){
+            if(scoreB>scoreE){
+                game.setWinner(game.getBlack());
+                game.setStatus(GameStatus.BLACK_WIN);
+                return game;
+
+            }
+            game.setWinner(game.getWhite());
+            game.setStatus(GameStatus.WHITE_WIN);
+            return  game;
+
+        }
+    return null;
+    }
+
+    public boolean isCaseEmpty(Game game,int col,int row){
+        if((game.getBoard()[row][col].toString()).equals(CellStatus.EMPTY.toString())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public boolean canIPlay(String connectedUserUsername,Game game) {
+        if(((long)game.getCurrentPlayer() == users.findByUsername(connectedUserUsername).getId())){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+    private boolean isMoveValid(Game game, int col ,int row,CellStatus player,CellStatus opp) throws InvalidMoveException{
         int size= game.getBoard().length;
         //definition des directions de recherches
         int droite = game.getBoard().length-col-1;
@@ -120,8 +238,8 @@ public class GameService {
 
 
         //presence d'une autre piece autour qui est un adversaire
-        // si la case existe
         int enemyHautGauche = 0;
+        //  il faut verifier si la case existe
         if(0<=col-1 && 0<=row-1){
             //et que cette case est un adversaire
             if(game.getBoard()[col-1][row-1].toString().equals(opp.toString())){
@@ -251,58 +369,89 @@ public class GameService {
                 setCell(game, col, i, player);
             }
         }
-        //todo continuer ici
-        //si au final mes recherches se sont montrés infructueuse c'est que le mouve ne capturais aucune piece
-if(maCouleurBas== 0 && maCouleurDroite == 0 && maCouleurGauche ==0 && maCouleurHaut==0){//todo a completer
+
+        //verif en haut a gauche
+        int maCouleurHautGauche = 0;
+        if(enemyHautGauche==1){
+            for(int i = gauche-1;i>=0;i--){
+                for(int e = haut-1;e>=0;e--){
+                    if(game.getBoard()[i][e].toString().equals(player.toString())){
+                        maCouleurHautGauche++;
+                        break;
+                    }
+                }
+            }
+        }
+        //si j'ai trouvé en haut a gauche
+        if(maCouleurHautGauche != 0 && enemyHautGauche ==1){
+        for(int i =0;i<=maCouleurHautGauche;i++){
+                setCell(game, col-i, row-i, player);
+
+            }
+        }
+
+        //verif en bas a droite
+        int maCouleurBasDroit=0;
+        if(enemyBasDroite==1){
+            for(int i =col;i<size-col;i++){
+                for(int e=row;e<size-row;e++){
+                    if(game.getBoard()[i][e].toString().equals(player.toString())){
+                        maCouleurBasDroit++;
+                        break;
+                    }
+                }
+            }
+        }
+        //si je des collegues en bas a droite
+        if(enemyBasDroite!=0 && enemyBasDroite==1){
+                for(int e = 0;e<=maCouleurBasDroit;e++){
+                    setCell(game, col+e, row+e, player);
+            }
+        }
+
+
+        //verif en haut a droite
+        int maCouleurHautDroit = 0;
+        if(enemyHautDroit==1){
+            for(int i = col;i<size-col;i++){
+                for(int e = row;e>=0;e--){
+                    if(game.getBoard()[i][e].toString().equals(player.toString())){
+                        maCouleurHautDroit++;
+                        break;
+                    }
+                }
+            }
+        }
+        //si je trouve un collegue en haut a droite
+        if(maCouleurHautDroit!=0 && enemyHautDroit==1){
+            for(int i = 0;i<=maCouleurHautDroit;i++){
+                setCell(game, col+i, row-i, player);
+            }
+        }
+
+        int maCouleurBasGauche=0;
+        if(enemyBasGauche==1){
+            for(int i = col;i>=0;i--){
+                for(int e = row;e<size-row;e++){
+                    if(game.getBoard()[i][e].toString().equals(player.toString())){
+                        maCouleurBasGauche++;
+                        break;
+                    }
+                }
+            }
+        }
+        //si je trouve un collegue en bas a gauche
+        if(maCouleurBasGauche!=0 && enemyBasGauche==1){
+            for(int i = 0;i<=maCouleurBasGauche;i++){
+                setCell(game, col-i, row+i, player);
+            }
+        }
+
+        //si au final mes recherches se sont montrés infructueuse c'est que le mouve ne capturais aucune piece dans aucun sens
+if(maCouleurBas== 0 && maCouleurDroite == 0 && maCouleurGauche ==0 && maCouleurHaut==0 && maCouleurHautGauche ==0 && maCouleurBasDroit==0 && maCouleurHautDroit==0 && maCouleurBasGauche==0){
     throw new InvalidMoveException();
 }
-
         return true;
     }
 
-
-
-
-
-
-
-
-
-    private void alternatePlayer(Game game) {
-        int cur = game.getCurrentPlayer();
-        int b = game.getBlack();
-        int w = game.getWhite();
-        if(cur == b){
-            game.setCurrentPlayer(w);
-
-            game.setStatus(GameStatus.WHITE_TURN);
-        }
-        else{
-            game.setCurrentPlayer(b);
-            game.setStatus(GameStatus.BLACK_TURN);
-        }
-    }
-
-    private void checkDraw(Game game) {
-    }
-
-    private void checkWinner(Game game) {
-    }
-
-    public boolean isCaseEmpty(Game game,int col,int row){
-        if((game.getBoard()[row][col].toString()).equals(CellStatus.EMPTY.toString())){
-            return true;
-        }else{
-            return false;
-        }
-    }
-    public boolean canIPlay(String connectedUserUsername,Game game) {
-        if(((long)game.getCurrentPlayer() == users.findByUsername(connectedUserUsername).getId())){
-            return true;
-        }
-        else{
-            return false;
-        }
-
-    }
 }
