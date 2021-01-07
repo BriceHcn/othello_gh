@@ -41,7 +41,7 @@ public class GameController {
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("opponents",userService.getAllUserExceptCurrentTemp(users));
-        List tailles = Arrays.asList(8, 6, 4);//todo dans un enum ou quoi
+        List tailles = Arrays.asList(8, 6, 4);
         model.addAttribute("sizes",tailles);
         return "game/create";
     }
@@ -77,8 +77,8 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public String game(@PathVariable Long id, Model model) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));//todo catch l'execption
+    public String game(@PathVariable Long id, Model model,RedirectAttributes attribs) {
+        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("game", game);
         model.addAttribute("boardSize",game.getBoard().length);
         model.addAttribute("users",users);
@@ -88,9 +88,9 @@ public class GameController {
 
     @GetMapping("/play/{id}/{col}/{row}")
     public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row,Model model, RedirectAttributes attribs) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));//todo catch l'execption
+        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if(!gameService.canIplay(userService.getConnectedUserUsername(), game)){
+        if(!gameService.canIPlay(userService.getConnectedUserUsername(), game)){
             attribs.addFlashAttribute("message", "C'est pas ton tour");
             return "redirect:/game/" + id;
         }
@@ -98,10 +98,11 @@ public class GameController {
             attribs.addFlashAttribute("message", "Cette case est deja prise");
             return "redirect:/game/" + id;
         }
+
         try {
             games.save(gameService.play(game, col, row));
         } catch (InvalidMoveException e) {
-            attribs.addFlashAttribute("message", e.getMessage());
+            attribs.addFlashAttribute("message", "tu ne peux pas jouer dans cette case");
         }
         return "redirect:/game/" + id;
     }
@@ -109,7 +110,7 @@ public class GameController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id){
-        games.deleteById(id); //todo voir si deux personne supprime en meme temps
+        games.deleteById(id);
         return"redirect:/game/list";
     }
 

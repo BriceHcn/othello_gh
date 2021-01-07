@@ -5,7 +5,9 @@ import lombok.Setter;
 import org.isen.cir3.othello_gh.domain.Authority;
 import org.isen.cir3.othello_gh.domain.User;
 import org.isen.cir3.othello_gh.form.UserForm;
+import org.isen.cir3.othello_gh.repository.AuthorityRepository;
 import org.isen.cir3.othello_gh.repository.UserRepository;
+import org.isen.cir3.othello_gh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -31,13 +33,16 @@ public class IndexController {
     private UserRepository users;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private AuthorityRepository authorities;
+
+    @Autowired
     private PasswordEncoder PasswordEncoder;
 
     @GetMapping({"","/"})
     public String index(){
-        //todo rajouter un truc en bdd qui creer les deux statut du site
-        //Authority auth = new Authority(1,ROLE_ADMIN);
-        //Authority auth = new Authority(2,ROLE_ADMIN);
         return "redirect:/game/list";
     }
 
@@ -78,22 +83,15 @@ public class IndexController {
             model.addAttribute("errorUniciteLoginMail",1);
             return "register";
         }
-
-        c.setUsername(form.getUsername()); //todo deplacer tout ca dans user service genre CreateUser(pseudo,username,password) et faire le metier la dedans
+        c.setUsername(form.getUsername());
         c.setPseudo(form.getPseudo());
         c.setPassword(getPasswordEncoder().encode(form.getPassword()));
         Authority e = new Authority();
         e.setId(Integer.toUnsignedLong(2));
+        e.setAuthority("ROLE_USER");
         c.setAuthorities(new ArrayList<Authority>());
         c.getAuthorities().add(e);
         users.save(c);
-        /*
-        try {//TODO connexion automatique aprés inscription
-            request.login(c.getUsername(),c.getPassword());
-        } catch (ServletException servletException) {
-            servletException.printStackTrace();
-        }
-         */
         return "redirect:/login";
     }
 }

@@ -14,7 +14,7 @@ import java.util.Locale;
 @Service
 public class UserService {
 
-    @PostFilter("filterObject.username != authentication.principal.username")//todo ca ne marche pas donc en attendant on utilises les fonctions du bas :(
+    @PostFilter("filterObject.username != authentication.principal.username")//ca ne marche pas donc en attendant on utilises les fonctions du bas :(
     public List<User> getAllUserExceptCurrent(UserRepository users) {
         return users.findAll();
     }

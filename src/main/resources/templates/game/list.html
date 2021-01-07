@@ -6,6 +6,7 @@
 <body>
 
 <div th:fragment="content">
+    <p th:if="${message ne null}" class="alert alert-danger" th:text="${message}"></p>
     <h1>Liste des parties</h1>
     <table class="table">
         <thead class="thead-dark">
@@ -17,7 +18,8 @@
             <th></th>
         </tr>
         </thead>
-        <tbody>
+        <tbody th:if="${message ne null}">
+
         <tr th:each="game : ${games}" th:object="${game}">
             <td th:text="${users.findById(game.black.longValue()).get().getPseudo()}">joueur noir</td>
             <td th:text="${users.findById(game.white.longValue()).get().getPseudo()}">joeur blanc</td>
@@ -34,6 +36,7 @@
                 </a>
             </td>
         </tr>
+
         </tbody>
 
     </table>
