@@ -8,19 +8,18 @@ import org.isen.cir3.othello_gh.repository.UserRepository;
 import org.isen.cir3.othello_gh.service.GameService;
 import org.isen.cir3.othello_gh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/game")
@@ -47,7 +46,7 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public String addAction(@Valid @ModelAttribute("game") GameForm form, BindingResult result, Model model, HttpServletRequest request) {
+    public String addAction(@Valid @ModelAttribute("game") GameForm form, BindingResult result, Model model) {
         if(result.hasErrors()){
             model.addAttribute("game",form);
             return "game/create";
@@ -78,29 +77,43 @@ public class GameController {
 
     @GetMapping("/{id}")
     public String game(@PathVariable Long id, Model model,RedirectAttributes attribs) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        model.addAttribute("game", game);
-        model.addAttribute("boardSize",game.getBoard().length);
-        model.addAttribute("users",users);
-        return "game/play";
+        Optional<Game> game = games.findById(id);
+        //si cette partie existe
+        if(game.isPresent()){
+            model.addAttribute("game", game.get());
+            model.addAttribute("boardSize",game.get().getBoard().length);
+            model.addAttribute("users",users);
+            return "game/play";
+            //sinon redirection vers la liste des parties
+        }else{
+            attribs.addFlashAttribute("message", "Cette partie n'existe pas (ou plus) 😢");
+            return "redirect:/game/list";
+        }
     }
 
 
     @GetMapping("/play/{id}/{col}/{row}")
-    public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row,Model model, RedirectAttributes attribs) {
-        Game game = games.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row, RedirectAttributes attribs) {
+        Optional<Game> game = games.findById(id);
+        //si la partie n'existe pas: redirection vers la liste des parties
+        if(game.isEmpty()){
+            attribs.addFlashAttribute("message", "Ton adversaire à supprimé cette partie (sans doute un mauvais perdant) 😢");
+            return "redirect:/game/list";
+        }
 
-        if(!gameService.canIPlay(userService.getConnectedUserUsername(), game)){
+        //si c'est mon tour
+        if(!gameService.canIPlay(userService.getConnectedUserUsername(), game.get())){
             attribs.addFlashAttribute("message", "C'est pas ton tour");
             return "redirect:/game/" + id;
         }
-        if(!gameService.isCaseEmpty(game, col, row)){
+        //que la case ou je joue est vide
+        if(!gameService.isCaseEmpty(game.get(), col, row)){
             attribs.addFlashAttribute("message", "Cette case est deja prise");
             return "redirect:/game/" + id;
         }
-
+        //et que mon moove est valide selon les regles du jeu
         try {
-            games.save(gameService.play(game, col, row));
+            games.save(gameService.play(game.get(), col, row));
         } catch (InvalidMoveException e) {
             attribs.addFlashAttribute("message", "tu ne peux pas jouer dans cette case");
         }
@@ -109,9 +122,17 @@ public class GameController {
 
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id){
-        games.deleteById(id);
-        return"redirect:/game/list";
+    public String delete(@PathVariable Long id,RedirectAttributes attribs){
+        Optional<Game> game = games.findById(id);
+        if(game.isPresent()){
+            games.deleteById(id);
+            return"redirect:/game/list";
+        }else{
+            attribs.addFlashAttribute("message", "Cette partie à deja été supprimée 😢");
+            return "redirect:/game/list";
+        }
+
+
     }
 
 

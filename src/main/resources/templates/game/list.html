@@ -19,7 +19,6 @@
         </tr>
         </thead>
         <tbody >
-
         <tr th:each="game : ${games}" th:object="${game}">
             <td th:text="${users.findById(game.black.longValue()).get().getPseudo()}">joueur noir</td>
             <td th:text="${users.findById(game.white.longValue()).get().getPseudo()}">joeur blanc</td>
