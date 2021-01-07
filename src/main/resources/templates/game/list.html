@@ -30,7 +30,7 @@
             </td>
             <td>
 
-                <a th:href="@{/game/{id}(id=*{id})}" class="btn btn-danger">
+                <a th:if="${game.getStatus().toString().equals('Tour Blanc') || game.getStatus().toString() == 'Tour Noir'}" th:href="@{/game/{id}(id=*{id})}" class="btn btn-danger">
                     <i class="ri-play-line"></i>
                 </a>
             </td>

@@ -15,11 +15,7 @@
     <p th:if="${message ne null}" class="alert alert-danger" th:text="${message}"></p>
 
     <p th:if="${game.status.name() == 'BLACK_TURN'}">Au tour de <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
-    <p th:if="${game.status.name() == 'WHITE_TURN'}">Au tour <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
-    <p th:if="${game.status.name() == 'DRAW'}">This is a draw ! No winner... but no looser either!</p>
-    <p th:if="${game.status.name() == 'FINISHED'}">Player <span th:text="${users.findById(game.winner.longValue()).get().getPseudo()}">X</span> wins!</p>
-
-
+    <p th:if="${game.status.name() == 'WHITE_TURN'}">Au tour de <span th:text="${users.findById(game.currentPlayer.longValue()).get().getPseudo()}">X</span>, bon chance</p>
 
 
     <table class="board">

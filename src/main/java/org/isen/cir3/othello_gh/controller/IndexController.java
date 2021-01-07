@@ -41,6 +41,7 @@ public class IndexController {
     @Autowired
     private PasswordEncoder PasswordEncoder;
 
+
     @GetMapping({"","/"})
     public String index(){
         return "redirect:/game/list";
@@ -83,6 +84,7 @@ public class IndexController {
             model.addAttribute("errorUniciteLoginMail",1);
             return "register";
         }
+
         c.setUsername(form.getUsername());
         c.setPseudo(form.getPseudo());
         c.setPassword(getPasswordEncoder().encode(form.getPassword()));
@@ -92,7 +94,10 @@ public class IndexController {
         c.setAuthorities(new ArrayList<Authority>());
         c.getAuthorities().add(e);
         users.save(c);
-        return "redirect:/login";
+
+        //autologin
+        userService.authWithHttpServletRequest(request, c.getUsername(),form.getPassword());
+        return "redirect:/";
     }
 }
 

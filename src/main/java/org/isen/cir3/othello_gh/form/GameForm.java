@@ -9,12 +9,10 @@ import javax.validation.constraints.*;
 @Setter
 public class GameForm {
 
-    //@NotNull
-    //@NotEmpty
-    //@NotBlank
-    //@Size(min = 2, max = 20)
+    @NotNull
     private int opponent;
 
+    @NotNull
     private int currentUser;
 
     @Min(4)

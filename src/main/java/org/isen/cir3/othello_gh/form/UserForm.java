@@ -24,6 +24,7 @@ public class UserForm {
 
     @NotNull
     @NotEmpty
+    @Size(min = 4, max = 15)
     private String password;
 
 }

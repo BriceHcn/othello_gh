@@ -1,6 +1,7 @@
 package org.isen.cir3.othello_gh.controller;
 
 import org.isen.cir3.othello_gh.domain.Game;
+import org.isen.cir3.othello_gh.domain.GameStatus;
 import org.isen.cir3.othello_gh.exception.InvalidMoveException;
 import org.isen.cir3.othello_gh.form.GameForm;
 import org.isen.cir3.othello_gh.repository.GameRepository;
@@ -37,6 +38,11 @@ public class GameController {
     @Autowired
     private UserService userService;
 
+
+
+
+
+
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("opponents",userService.getAllUserExceptCurrentTemp(users));
@@ -64,6 +70,7 @@ public class GameController {
     public String list(Model model){
         model.addAttribute("games",gameService.findGameForCurrentUser());
         model.addAttribute("users",users);
+        //(game.getStatus().equals(GameStatus.BLACK_TURN)) || ((game.getStatus().equals(GameStatus.WHITE_TURN)))
         return"game/list";
     }
 
@@ -94,28 +101,35 @@ public class GameController {
 
     @GetMapping("/play/{id}/{col}/{row}")
     public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row, RedirectAttributes attribs) {
+
         Optional<Game> game = games.findById(id);
+
+        //si la partie est terminée
+        if(game.get().getStatus().toString().equals("Victoir Blanc") || game.get().getStatus().toString().equals("Victoire Noir")){
+            attribs.addFlashAttribute("message", "Cette partie est finie 😢");
+            return "redirect:/game/list";
+        }
         //si la partie n'existe pas: redirection vers la liste des parties
         if(game.isEmpty()){
             attribs.addFlashAttribute("message", "Ton adversaire à supprimé cette partie (sans doute un mauvais perdant) 😢");
             return "redirect:/game/list";
         }
-
-        //si c'est mon tour
+        //si c'est pas mon tour
         if(!gameService.canIPlay(userService.getConnectedUserUsername(), game.get())){
-            attribs.addFlashAttribute("message", "C'est pas ton tour");
+            attribs.addFlashAttribute("message", "C'est pas ton tour 😢");
             return "redirect:/game/" + id;
         }
         //que la case ou je joue est vide
         if(!gameService.isCaseEmpty(game.get(), col, row)){
-            attribs.addFlashAttribute("message", "Cette case est deja prise");
+            attribs.addFlashAttribute("message", "Cette case est deja prise 😢");
             return "redirect:/game/" + id;
         }
-        //et que mon moove est valide selon les regles du jeu
+
         try {
+            //et que finalement mon moove est valide selon les regles du jeu
             games.save(gameService.play(game.get(), col, row));
         } catch (InvalidMoveException e) {
-            attribs.addFlashAttribute("message", "tu ne peux pas jouer dans cette case");
+            attribs.addFlashAttribute("message", "tu ne peux pas jouer dans cette case 😢");
         }
         return "redirect:/game/" + id;
     }
