@@ -18,7 +18,7 @@
             <th></th>
         </tr>
         </thead>
-        <tbody th:if="${message ne null}">
+        <tbody >
 
         <tr th:each="game : ${games}" th:object="${game}">
             <td th:text="${users.findById(game.black.longValue()).get().getPseudo()}">joueur noir</td>
