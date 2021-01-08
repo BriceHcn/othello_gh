@@ -41,11 +41,6 @@ public class GameController {
     @Autowired
     private UserService userService;
 
-
-
-
-
-
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("opponents",userService.getAllUserExceptCurrentTemp(users));
@@ -66,8 +61,6 @@ public class GameController {
         Game game = games.save(gameService.create(form.getSize(),form.getCurrentUser(), form.getOpponent()));
         return "redirect:/game/"+game.getId();
     }
-
-
 
     @GetMapping("/list")
     public String list(Model model,@PageableDefault(page=0, size=10, sort = "created", direction = Sort.Direction.DESC) Pageable pageable){
@@ -100,7 +93,6 @@ public class GameController {
             return "redirect:/game/list";
         }
     }
-
 
     @GetMapping("/play/{id}/{col}/{row}")
     public String play(@PathVariable Long id, @PathVariable int col, @PathVariable int row, RedirectAttributes attribs) {
