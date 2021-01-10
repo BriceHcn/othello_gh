@@ -129,11 +129,15 @@ public class GameService {
 
 
 
+
         game=checkWinner(game);
-        // no winner ? then check if this is a draw
-        if (game.getWinner()== null) {
-            game= checkDraw(game);
+        game= checkDraw(game);
+        /*
+        if (game.getWinner() != game.getBlack() || game.getWinner() != game.getWhite()) {
+
         }
+
+         */
         return game;
     }
 
@@ -174,7 +178,7 @@ public class GameService {
             return  game;
 
         }
-        return null;
+        return game;
     }
 
     private Game checkWinner(Game game) {
@@ -207,7 +211,7 @@ public class GameService {
             return  game;
 
         }
-    return null;
+    return game;
     }
 
     public boolean isCaseEmpty(Game game,int col,int row){
@@ -440,9 +444,10 @@ public class GameService {
                 }
             }
         }
+        System.out.println(enemyBasGauche);
         //si je trouve un collegue en bas a gauche
         if(maCouleurBasGauche!=0 && enemyBasGauche==1){
-            for(int i = 0;i<=maCouleurBasGauche;i++){
+            for(int i = 0;i<maCouleurBasGauche;i++){
                 setCell(game, col-i, row+i, player);
             }
         }
