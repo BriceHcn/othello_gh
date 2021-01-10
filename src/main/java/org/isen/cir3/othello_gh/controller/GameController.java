@@ -64,7 +64,6 @@ public class GameController {
     public String list(Model model,@PageableDefault(page=0, size=10, sort = "created", direction = Sort.Direction.DESC) Pageable pageable){
         model.addAttribute("games",gameService.findGameForCurrentUser(pageable));
         model.addAttribute("users",users);
-
         return"game/list";
     }
 
@@ -97,18 +96,20 @@ public class GameController {
 
         Optional<Game> game = games.findById(id);
 
-        //si la partie est terminée
+        //si la partie existe
         if(game.isPresent()) {
+            //si la partie est terminée
             if (game.get().getStatus().toString().equals("Victoir Blanc") || game.get().getStatus().toString().equals("Victoire Noir")) {
                 attribs.addFlashAttribute("message", "Cette partie est finie 😢");
                 return "redirect:/game/list";
             }
         }
         //si la partie n'existe pas: redirection vers la liste des parties
-        if(game.isEmpty()){
+        else{
             attribs.addFlashAttribute("message", "Ton adversaire à supprimé cette partie (sans doute un mauvais perdant) 😢");
             return "redirect:/game/list";
         }
+
         //si c'est pas le tour
         if(!gameService.canIPlay(userService.getConnectedUserUsername(), game.get())){
             attribs.addFlashAttribute("message", "C'est pas ton tour 😢");
@@ -135,11 +136,10 @@ public class GameController {
         Optional<Game> game = games.findById(id);
         if(game.isPresent()){
             games.deleteById(id);
-            return"redirect:/game/list";
         }else{
             attribs.addFlashAttribute("message", "Cette partie à deja été supprimée 😢");
-            return "redirect:/game/list";
         }
+        return"redirect:/game/list";
 
 
     }

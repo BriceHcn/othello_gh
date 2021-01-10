@@ -10,7 +10,6 @@ import org.isen.cir3.othello_gh.repository.UserRepository;
 import org.isen.cir3.othello_gh.service.AuthorityService;
 import org.isen.cir3.othello_gh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -83,7 +82,6 @@ public class UserController {
             return "register";
         }
 
-
         authService.createBaseAuth();
 
         c.setUsername(form.getUsername());
@@ -102,7 +100,7 @@ public class UserController {
     }
 
     @GetMapping("/become/admin")
-    public String becomeAdmin(Model model, RedirectAttributes attribs){
+    public String becomeAdmin( RedirectAttributes attribs){
         User user =users.findByUsername(userService.getConnectedUserUsername());
         Authority e = new Authority();
         e.setId(Integer.toUnsignedLong(1));

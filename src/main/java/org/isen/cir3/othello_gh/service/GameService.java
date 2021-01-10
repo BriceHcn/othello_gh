@@ -72,7 +72,7 @@ public class GameService {
         return score;
     }
 
-    public Object findGameForCurrentUser( Pageable pageable) {
+    public Object findGameForCurrentUser(Pageable pageable) {
         List<Game> gamesForSpecificUser= new ArrayList();
         for(Game g : games.findAll(pageable)){
             if((users.findById((long) g.getWhite()).get().getUsername()).equals(userService.getConnectedUserUsername())  || (users.findById((long) g.getBlack()).get().getUsername()).equals(userService.getConnectedUserUsername())){
