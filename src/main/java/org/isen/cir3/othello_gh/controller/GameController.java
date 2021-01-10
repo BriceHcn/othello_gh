@@ -1,7 +1,6 @@
 package org.isen.cir3.othello_gh.controller;
 
 import org.isen.cir3.othello_gh.domain.Game;
-import org.isen.cir3.othello_gh.domain.GameStatus;
 import org.isen.cir3.othello_gh.exception.InvalidMoveException;
 import org.isen.cir3.othello_gh.form.GameForm;
 import org.isen.cir3.othello_gh.repository.GameRepository;
@@ -99,21 +98,23 @@ public class GameController {
         Optional<Game> game = games.findById(id);
 
         //si la partie est terminée
-        if(game.get().getStatus().toString().equals("Victoir Blanc") || game.get().getStatus().toString().equals("Victoire Noir")){
-            attribs.addFlashAttribute("message", "Cette partie est finie 😢");
-            return "redirect:/game/list";
+        if(game.isPresent()) {
+            if (game.get().getStatus().toString().equals("Victoir Blanc") || game.get().getStatus().toString().equals("Victoire Noir")) {
+                attribs.addFlashAttribute("message", "Cette partie est finie 😢");
+                return "redirect:/game/list";
+            }
         }
         //si la partie n'existe pas: redirection vers la liste des parties
         if(game.isEmpty()){
             attribs.addFlashAttribute("message", "Ton adversaire à supprimé cette partie (sans doute un mauvais perdant) 😢");
             return "redirect:/game/list";
         }
-        //si c'est pas mon tour
+        //si c'est pas le tour
         if(!gameService.canIPlay(userService.getConnectedUserUsername(), game.get())){
             attribs.addFlashAttribute("message", "C'est pas ton tour 😢");
             return "redirect:/game/" + id;
         }
-        //que la case ou je joue est vide
+        //que la case est vide
         if(!gameService.isCaseEmpty(game.get(), col, row)){
             attribs.addFlashAttribute("message", "Cette case est deja prise 😢");
             return "redirect:/game/" + id;

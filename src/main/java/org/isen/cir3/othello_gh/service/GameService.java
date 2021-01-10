@@ -10,11 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,9 +114,6 @@ public class GameService {
         }
 
 
-
-
-
         // if the game has not ended, alternate player
         alternatePlayer(game);
         //on actualise les scores
@@ -128,16 +121,9 @@ public class GameService {
         game.setScoreBlack(checkScore(game, CellStatus.B));
 
 
-
-
         game=checkWinner(game);
         game= checkDraw(game);
-        /*
-        if (game.getWinner() != game.getBlack() || game.getWinner() != game.getWhite()) {
 
-        }
-
-         */
         return game;
     }
 
