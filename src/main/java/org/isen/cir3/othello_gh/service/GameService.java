@@ -370,7 +370,9 @@ public class GameService {
         //si j'ai trouvé des collegues en haut
         if(maCouleurHaut!=0 && enemyHautMilieu==1){
             for(int i=row;i>maCouleurHaut+1;i--) {
-                setCell(game, col, i, player);
+                if(i>=0 && i<=size-1) {
+                    setCell(game, col, i, player);
+                }
             }
         }
 
@@ -389,7 +391,9 @@ public class GameService {
         //si j'ai trouvé en haut a gauche
         if(maCouleurHautGauche != 0 && enemyHautGauche ==1){
         for(int i =0;i<=maCouleurHautGauche;i++){
-                setCell(game, col-i, row-i, player);
+            if(col-i>=0 && col-i<=size-1 && row-i>=0 && row-i>=size-1) {
+                setCell(game, col - i, row - i, player);
+            }
 
             }
         }
@@ -409,7 +413,9 @@ public class GameService {
         //si je des collegues en bas a droite
         if(enemyBasDroite!=0 && enemyBasDroite==1){
                 for(int e = 0;e<=maCouleurBasDroit;e++){
-                    setCell(game, col+e, row+e, player);
+                    if(col+e>=0 && col+e<=size-1 && row+e>=0 && row+e>=size-1) {
+                        setCell(game, col + e, row + e, player);
+                    }
             }
         }
 
@@ -429,7 +435,9 @@ public class GameService {
         //si je trouve un collegue en haut a droite
         if(maCouleurHautDroit!=0 && enemyHautDroit==1){
             for(int i = 0;i<=maCouleurHautDroit;i++){
-                setCell(game, col+i, row-i, player);
+                if(col+i>=0 && col+i<=size-1 && row-i>=0 && row-i>=size-1) {
+                    setCell(game, col + i, row - i, player);
+                }
             }
         }
 
@@ -448,7 +456,9 @@ public class GameService {
         //si je trouve un collegue en bas a gauche
         if(maCouleurBasGauche!=0 && enemyBasGauche==1){
             for(int i = 0;i<maCouleurBasGauche;i++){
-                setCell(game, col-i, row+i, player);
+                if(col-i>=0 && col-i<=size-1 && row+i>=0 && row+i>=size-1) {
+                    setCell(game, col - i, row + i, player);
+                }
             }
         }
 
